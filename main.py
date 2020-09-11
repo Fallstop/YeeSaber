@@ -63,7 +63,7 @@ def getSongLights(event):
             elif lightChange == 0:
                 rgb = (1,1,1)
             else:
-                rgb = (0,0,0)
+                rgb = lastRGB
             return rgb
         else: return lastRGB
     except Exception as e:
