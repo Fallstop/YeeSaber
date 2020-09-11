@@ -9,37 +9,40 @@ import json
 import config
 
 lights_available = dict()
+lights_enabled = set()
 lastRGB = (0,0,0)
 
 # disable allEnabled if you wish for lights to be whitelisted. Set enabled property on bulb to enable
 allEnabled = True
 
 def changeLightColour(colour,):
-    for bulb in lights_available.values():
+    for bulb in get_selected():
         print("Updating brightness: ",bulb)
         bulb.set_rgb(colour[0],colour[1],colour[2])
 
 def setUpLights():
-    for bulb in lights_available.values():
+    for bulb in get_selected():
         print("Initiating light: ",bulb)
         bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
         bulb.set_brightness(config.colours.neutralBrightness)
         bulb.start_music()
+        bulb.turn_on()
 
 def disconnectLights():
-    for bulb in lights_available.values():
+    for bulb in get_selected():
         print("Disconnecting light: ",bulb)
         bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
         bulb.set_brightness(config.colours.neutralBrightness)
-        bulb.stop_music()
+        try: bulb.stop_music()
+        except: print("Failed to turn off music mode...")
 
 def changeLightBrightness(brightness):
-    for bulb in lights_available.values():
+    for bulb in get_selected():
         print("Updating brightness: ",bulb)
         bulb.set_brightness(brightness)
 
 def startLightFlow(Flow):
-    for bulb in lights_available.values():
+    for bulb in get_selected():
         print("Starting flow: ",bulb)
         bulb.start_flow(Flow)
 
@@ -149,13 +152,15 @@ def on_close(ws):
 def on_open(ws):
     print("Connected to beatsaber")
 
+wsApp = False
 def start_socket():
-    ws = websocket.WebSocketApp("ws://"+config.beatsaberServer.host+":"+str(config.beatsaberServer.port)+"/socket",
+    global wsApp
+    wsApp = websocket.WebSocketApp("ws://"+config.beatsaberServer.host+":"+str(config.beatsaberServer.port)+"/socket",
                               on_message = on_message,
                               on_error = on_error,
                               on_close = on_close)
-    ws.on_open = on_open
-    ws.run_forever()
+    wsApp.on_open = on_open
+    wsApp.run_forever()
 
 def discover_lights():
     global lights_available
@@ -168,7 +173,8 @@ def discover_lights():
         return lights_available
 
 def get_selected():
-    return lights_available if allEnabled else [light for light in lights_available.values() if light.selected]
+    if(allEnabled): return lights_available.values()
+    return [l for (n,l) in lights_available.items() if n in lights_enabled]
 
 if __name__ == "__main__":
     print("Finding lights available")
