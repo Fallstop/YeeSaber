@@ -8,7 +8,7 @@ class colours:
     spikeBrightness = 100
 
 class lightingMode:
-    mode = "SongLights" #Options: [Score, SongLights]
+    mode = "SongLights" #Options: [Score, SongLights,Notes]
     spikeBrightnessOnNoteCut = True
 
 class beatsaberServer:

@@ -80,6 +80,18 @@ def on_message(ws, message):
             if rgb != lastRGB:
                 lastRGB = rgb
                 changeLightColour(rgb)
+        elif config.lightingMode.mode == "Notes":
+            print("Note cut, updating lights to:",event["noteCut"]["noteType"][-1:])
+            if event["noteCut"]["noteType"][-1:] == "A":
+                rgb = config.colours.leftColour
+            elif event["noteCut"]["noteType"][-1:] == "B":
+                rgb = config.colours.rightColour
+            else:
+                return
+            if rgb != lastRGB:
+                lastRGB = rgb
+                changeLightColour(rgb)
+
         if config.lightingMode.spikeBrightnessOnNoteCut:
             print("Note cut received, spiking brightness")
             brightnessSpikeFlow = yeelight.Flow(
