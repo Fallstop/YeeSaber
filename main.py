@@ -8,28 +8,31 @@ import yeelight
 import json
 import config
 
-lights_available = []
+lights_available = dict()
 lastRGB = (0,0,0)
 
+# disable allEnabled if you wish for lights to be whitelisted. Set enabled property on bulb to enable
+allEnabled = True
+
 def changeLightColour(colour,):
-    for bulb in lights_available:
+    for bulb in lights_available.values():
         print("Updating brightness: ",bulb)
         bulb.set_rgb(colour[0],colour[1],colour[2])
 
 def setUpLights():
-    for bulb in lights_available:
+    for bulb in lights_available.values():
         print("Initiating light: ",bulb)
         bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
         bulb.set_brightness(config.colours.neutralBrightness)
         bulb.start_music()
 
 def changeLightBrightness(brightness):
-    for bulb in lights_available:
+    for bulb in lights_available.values():
         print("Updating brightness: ",bulb)
         bulb.set_brightness(brightness)
 
 def startLightFlow(Flow):
-    for bulb in lights_available:
+    for bulb in lights_available.values():
         print("Starting flow: ",bulb)
         bulb.start_flow(Flow)
 
@@ -147,11 +150,23 @@ def start_socket():
     ws.on_open = on_open
     ws.run_forever()
 
-if __name__ == "__main__":
+def discover_lights():
+    global lights_available
     while len(lights_available) == 0:
-        print("Finding lights available")
-        lights_available = [yeelight.Bulb(x["ip"],effect=config.lightingMode.lightTransitions) for x in yeelight.discover_bulbs()]
-        print("Found",len(lights_available),"light(s)")
+        lights_available = dict()
+        for light in yeelight.discover_bulbs():
+            prefix = light["capabilities"]["name"] + '-'
+            name = (prefix if prefix != '-' else '') + light["ip"]
+            lights_available[name] = yeelight.Bulb(light["ip"],effect=config.lightingMode.lightTransitions)
+        return lights_available
+
+def get_selected():
+    return lights_available if allEnabled else [light for light in lights_available.values() if light.selected]
+
+if __name__ == "__main__":
+    print("Finding lights available")
+    discover_lights()
+    print("Found",len(lights_available),"light(s)")
     setUpLights()
 
     print("Done, opening web socket")
