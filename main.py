@@ -27,7 +27,7 @@ def setUpLights():
         bulb.start_music()
 
 def disconnectLights():
-    for bulb in lights_available:
+    for bulb in lights_available.values():
         print("Disconnecting light: ",bulb)
         bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
         bulb.set_brightness(config.colours.neutralBrightness)
