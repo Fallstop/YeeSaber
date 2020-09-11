@@ -60,8 +60,6 @@ def getSongLights(event):
                 rgb = config.colours.rightColour
             elif lightChange in [5,6,7]:
                 rgb = config.colours.leftColour
-            elif lightChange == 0:
-                rgb = (1,1,1)
             else:
                 rgb = lastRGB
             return rgb
@@ -90,6 +88,7 @@ def on_message(ws, message):
                 transitions = [
                     yeelight.RGBTransition(lastRGB[0],lastRGB[1],lastRGB[2],brightness=config.colours.spikeBrightness),
                     yeelight.SleepTransition(duration=50),
+                    yeelight.RGBTransition(lastRGB[0],lastRGB[1],lastRGB[2],brightness=config.colours.neutralBrightness),
                     ]
             )
             startLightFlow(brightnessSpikeFlow)

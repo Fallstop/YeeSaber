@@ -4,7 +4,7 @@ class colours:
     leftColour = (255,0,0)
     rightColour = (0,0,255)
 
-    neutralBrightness = 50
+    neutralBrightness = 10
     spikeBrightness = 100
 
 class lightingMode:
