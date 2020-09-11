@@ -10,6 +10,7 @@ class colours:
 class lightingMode:
     mode = "SongLights" #Options: [Score, SongLights,Notes]
     spikeBrightnessOnNoteCut = True
+    lightTransitions = "smooth" #[smooth, sudden]
 
 class beatsaberServer:
     host = "localhost"

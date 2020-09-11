@@ -11,25 +11,27 @@ import config
 lights_available = []
 lastRGB = (0,0,0)
 
-def changeLightColour(colour):
-    for lightIP in lights_available:
-        print("Updating brightness: ",lightIP)
-        yeelight.Bulb(lightIP).set_rgb(colour[0],colour[1],colour[2])
+def changeLightColour(colour,):
+    for bulb in lights_available:
+        print("Updating brightness: ",bulb)
+        bulb.set_rgb(colour[0],colour[1],colour[2])
+
+def setUpLights():
+    for bulb in lights_available:
+        print("Initiating light: ",bulb)
+        bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
+        bulb.set_brightness(config.colours.neutralBrightness)
+        bulb.start_music()
 
 def changeLightBrightness(brightness):
-    for lightIP in lights_available:
-        print("Updating brightness: ",lightIP)
-        yeelight.Bulb(lightIP).set_brightness(config.colours.neutralBrightness)
+    for bulb in lights_available:
+        print("Updating brightness: ",bulb)
+        bulb.set_brightness(brightness)
 
 def startLightFlow(Flow):
-    for lightIP in lights_available:
-        print("Starting flow: ",lightIP)
-        yeelight.Bulb(lightIP).start_flow(Flow)
-
-def startMusicMode():
-    for lightIP in lights_available:
-        print("Starting music mode: ",lightIP)
-        yeelight.Bulb(lightIP).start_music()
+    for bulb in lights_available:
+        print("Starting flow: ",bulb)
+        bulb.start_flow(Flow)
 
 def getScoreRGB(event):
     global lastRGB
@@ -124,13 +126,15 @@ def on_message(ws, message):
             
 
 def on_error(ws, error):
+    print("### error ###")
     print(error)
+    print("Trying to reconnect in 3s")
+    time.sleep(3)
+    print("Retrying...")
+    start_socket()
 
 def on_close(ws):
     print("### closed ###")
-    print("Trying to reconnect in 3s")
-    time.sleep(5)
-    start_socket()
 
 def on_open(ws):
     print("Connected to beatsaber")
@@ -146,11 +150,9 @@ def start_socket():
 if __name__ == "__main__":
     while len(lights_available) == 0:
         print("Finding lights available")
-        lights_available = [x["ip"] for x in yeelight.discover_bulbs()]
+        lights_available = [yeelight.Bulb(x["ip"],effect=config.lightingMode.lightTransitions) for x in yeelight.discover_bulbs()]
         print("Found",len(lights_available),"light(s)")
-    changeLightColour(config.colours.neutral)
-    changeLightBrightness(config.colours.neutralBrightness)
-    startMusicMode()
+    setUpLights()
 
     print("Done, opening web socket")
     start_socket()
