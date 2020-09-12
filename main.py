@@ -20,7 +20,8 @@ def changeLightColour(colour,):
         print("Updating brightness: ",bulb)
         bulb.set_rgb(colour[0],colour[1],colour[2])
 
-def setUpLights():
+def setUpLights(mode=config.lightingMode):
+    config.lightingMode = mode
     for bulb in get_selected():
         print("Initiating light: ",bulb)
         bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
