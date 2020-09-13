@@ -25,13 +25,14 @@ def changeLightColour(colour,):
 		print("Updating brightness: ",bulb)
 		bulb.set_rgb(colour[0],colour[1],colour[2])
 
-def setUpLights():
-	for bulb in get_selected():
-		print("Initiating light: ",bulb)
-		bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
-		bulb.set_brightness(config.colours.neutralBrightness)
-		bulb.start_music()
-		bulb.turn_on()
+def setUpLights(mode=config.lightingMode):
+    config.lightingMode = mode
+    for bulb in get_selected():
+        print("Initiating light: ",bulb)
+        bulb.set_rgb(config.colours.neutral[0],config.colours.neutral[1],config.colours.neutral[2])
+        bulb.set_brightness(config.colours.neutralBrightness)
+        bulb.start_music()
+        bulb.turn_on()
 
 def disconnectLights():
 	for bulb in get_selected():
